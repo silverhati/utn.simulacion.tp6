@@ -1,0 +1,8 @@
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\bin\Debug\Simulacion_TP6.exe
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\bin\Debug\Simulacion_TP6.pdb
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\obj\Debug\Simulacion_TP6.csprojResolveAssemblyReference.cache
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\obj\Debug\Simulacion_TP6.Form1.resources
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\obj\Debug\Simulacion_TP6.Properties.Resources.resources
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\obj\Debug\Simulacion_TP6.csproj.GenerateResource.Cache
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\obj\Debug\Simulacion_TP6.exe
+C:\Users\javier.lado\documents\visual studio 2017\Projects\Simulacion_TP6\Simulacion_TP6\obj\Debug\Simulacion_TP6.pdb
