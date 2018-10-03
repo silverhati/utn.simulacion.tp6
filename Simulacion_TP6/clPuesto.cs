@@ -10,10 +10,14 @@ namespace Simulacion_TP6
         private DateTime tps; //Tiempo próxima salida
         private string pta;   //Prioridad ticket asignado
         private string tipo;  //Tipo recurso: S, SS, J
+        private double ito; //Inicio tiempo ocioso
+        private double sto; //Sumatoria tiempo ociosio
 
         public DateTime Tps { get => tps; set => tps = value; }
         public string Pta { get => pta; set => pta = value; }
         public string Tipo { get => tipo; set => tipo = value; }
+        public double Ito  { get => ito; set => ito = value; }
+        public double Sto { get => sto; set => sto = value; }
 
         public int CompareTo(clPuesto other)
         {
