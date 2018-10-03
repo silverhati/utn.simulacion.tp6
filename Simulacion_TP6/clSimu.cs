@@ -323,8 +323,34 @@ namespace Simulacion_TP6
 
         private DateTime SumarTiempos(DateTime pT, double pTA)
         {
-            //TODO: sumar cierta cant de minutos al datetime, teniendo en cuenta que el HORARIO LABORAL es de L a V de 9 a 18hs
-            return new DateTime();
+            //Sumar cierta cant de minutos al datetime, teniendo en cuenta que el HORARIO LABORAL es de L a V de 9 a 18hs
+            DateTime inicio = new DateTime(pT.Year, pT.Month, pT.Day,9,0,0);
+            DateTime fin = new DateTime(pT.Year, pT.Month, pT.Day, 18, 0, 0);
+            //Sumo minutos
+            DateTime fechaActualizada = pT.AddMinutes(pTA);
+            //Si esta en el medio retorna la fecha correspondiente
+            if (fechaActualizada<fin && fechaActualizada>inicio)
+            {
+                return fechaActualizada;
+            }
+            else if (fechaActualizada > fin)
+            {
+                //La fecha es mayor y hay q modificarla
+                //Primero consigo la diferencia entre la fecha fin y la recibida, esa diferencia es la que se suma al dia siguiente
+                TimeSpan diferencia = fin - pT;
+                //Calcular: si la fecha es viernes pasa para lunes
+                if (pT.DayOfWeek.ToString().Equals("Friday"))
+                {
+                    return inicio.AddDays(3).Add(diferencia);
+                }
+                else {
+                    return inicio.AddDays(1).Add(diferencia);
+                }
+            }
+            else
+            {
+                return fechaActualizada;
+            }
         }
     }
 
