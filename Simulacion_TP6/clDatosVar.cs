@@ -12,10 +12,11 @@ namespace Simulacion_TP6
 
         static public double GenerarIA()
         {
-            //TODO: lógica que devuelva un IA
-            Random random = new Random();
-            return Convert.ToDouble(random.Next(0, 100));
+            Double a = 1; //dominio funcion: a < x < infinito
+            Double potencia1 = 2.551150568906;
+            Double potencia2 = 0.39198;
 
+            return Math.Pow((Math.Pow(a, potencia2))/(1 - random.NextDouble() * Math.Pow(a, potencia2)), potencia1);
         }
         static public double GenerarTA_S()
         {

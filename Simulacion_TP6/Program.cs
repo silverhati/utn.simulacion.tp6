@@ -16,6 +16,9 @@ namespace Simulacion_TP6
         {
             //ESTO LO PUSE PARA PROBAR LA GENERACION DE LOS NUMEROS ALEATORIOS
             //BORRAR 
+            System.IO.StreamWriter IA;
+            IA = File.CreateText("C:\\IA.txt");
+
             System.IO.StreamWriter TAJ;
             TAJ = File.CreateText("C:\\TAJ.txt");
 
@@ -24,6 +27,11 @@ namespace Simulacion_TP6
 
             System.IO.StreamWriter TAS;
             TAS = File.CreateText("C:\\TAS.txt");
+
+            for (int i = 0; i < 5000; i++)
+            {
+                IA.WriteLine(clDatosVar.GenerarIA().ToString());
+            }
 
             for (int i = 0; i < 5000; i++)
             {
@@ -40,6 +48,7 @@ namespace Simulacion_TP6
                 TAS.WriteLine(clDatosVar.GenerarTA_S().ToString());
             }
 
+            IA.Close();
             TAJ.Close();
             TASS.Close();
             TAS.Close();
