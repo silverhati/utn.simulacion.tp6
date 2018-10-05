@@ -389,8 +389,8 @@ namespace Simulacion_TP6
             else if (fechaActualizada > fin)
             {
                 //La fecha es mayor y hay q modificarla
-                //Primero consigo la diferencia entre la fecha fin y la recibida, esa diferencia es la que se suma al dia siguiente
-                TimeSpan diferencia = fin - pT;
+                //Primero consigo la diferencia entre la fecha fin y la recibida(actualizada), esa diferencia es la que se suma al dia siguiente
+                TimeSpan diferencia = fechaActualizada - fin;
                 //Calcular: si la fecha es viernes pasa para lunes
                 if (pT.DayOfWeek.ToString().Equals("Friday"))
                 {
