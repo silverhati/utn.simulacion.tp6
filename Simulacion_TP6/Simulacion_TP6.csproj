@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="clDatosVar.cs" />
     <Compile Include="clSimu.cs" />
+    <Compile Include="clTicket.cs" />
     <Compile Include="Form1.cs">
       <SubType>Form</SubType>
     </Compile>

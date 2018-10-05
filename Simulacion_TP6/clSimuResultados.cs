@@ -32,37 +32,61 @@ namespace Simulacion_TP6
             this.simulacion = simu;
         }
         
-        public void calcular()
+        public void Calcular()
         {
-            double sumTOS = 0;
-            double sumTOSS = 0;
-            double sumTOJ = 0;
-            //Alta
-            tMEA = (simulacion.Ssa - simulacion.Slla - simulacion.StaTA) / simulacion.NTA;
-            tMAA = simulacion.StaTA / simulacion.NTA;
-            //Normal
-            tMEN = (simulacion.Ssn - simulacion.Slln - simulacion.StaTN) / simulacion.NTN;
-            tMAN = simulacion.StaTN / simulacion.NTN;
-            //Baja
-            tMEB = (simulacion.Ssb - simulacion.Sllb - simulacion.StaTB) / simulacion.NTB;
-            tMAB = simulacion.StaTB / simulacion.NTB;
+            double totalMinOcio,
+                   totalMinSimu;
 
-            for (int i = 0; i <= simulacion.CantS; i++) {
-                sumTOS += simulacion.puestosS[i].Sto;
+            //Tiempos medios de espera en cola
+            this.tMEA = simulacion.SecA / simulacion.NTA;
+            this.tMEN = simulacion.SecN / simulacion.NTN;
+            this.tMEB = simulacion.SecB / simulacion.NTB;
+
+            //Tiempos medios de atención
+            this.tMAA = simulacion.StaTA / simulacion.NTA; 
+            this.tMAN = simulacion.StaTN / simulacion.NTN;
+            this.tMAB = simulacion.StaTB/ simulacion.NTB;
+
+            //Porcentajes de tiempos ociosos
+            totalMinSimu = clDatosVar.RestarFechas(simulacion.TiempoActual, simulacion.TiempoInicial);
+
+            totalMinOcio = 0;
+            for (int i = 0; i < simulacion.CantS; i++) {
+                //Sumar total de tiempo ocioso de todos los puestos SENIOR
+                totalMinOcio += simulacion.Puestos_S[i].Sto; 
+                if (simulacion.Puestos_S[i].Ito != DateTime.MinValue &&
+                    simulacion.Puestos_S[i].Ito <= simulacion.TiempoActual)
+                {
+                    totalMinOcio += clDatosVar.RestarFechas(simulacion.TiempoActual, simulacion.Puestos_S[i].Ito);
+                }
             }
+            ptoS = totalMinOcio / simulacion.CantS / totalMinSimu;
 
-            for (int i = 0; i <= simulacion.CantSS; i++)
+            totalMinOcio = 0;
+            for (int i = 0; i < simulacion.CantSS; i++)
             {
-                sumTOSS += simulacion.puestosSS[i].Sto;
+                //Sumar total de tiempo ocioso de todos los puestos SEMI SENIOR
+                totalMinOcio += simulacion.Puestos_SS[i].Sto;
+                if (simulacion.Puestos_SS[i].Ito != DateTime.MinValue &&
+                    simulacion.Puestos_SS[i].Ito <= simulacion.TiempoActual) //1/1/0001 00:00:00 
+                {
+                    totalMinOcio += clDatosVar.RestarFechas(simulacion.TiempoActual, simulacion.Puestos_SS[i].Ito);
+                }
             }
+            ptoSS = totalMinOcio / simulacion.CantSS / totalMinSimu;
 
-            for (int i = 0; i <= simulacion.CantJ; i++)
+            totalMinOcio = 0;
+            for (int i = 0; i < simulacion.CantJ; i++)
             {
-                sumTOJ += simulacion.puestosJ[i].Sto;
+                //Sumar total de tiempo ocioso de todos los puestos JUNIOR
+                totalMinOcio += simulacion.Puestos_J[i].Sto; 
+                if (simulacion.Puestos_J[i].Ito != DateTime.MinValue &&
+                    simulacion.Puestos_S[i].Ito <= simulacion.TiempoActual) //1/1/0001 00:00:00 
+                {
+                    totalMinOcio += clDatosVar.RestarFechas(simulacion.TiempoActual, simulacion.Puestos_J[i].Ito);
+                }
             }
-            ptoS = sumTOS / (simulacion.Time.Hour*100+simulacion.Time.Minute);
-            ptoSS = sumTOSS / (simulacion.Time.Hour * 100 + simulacion.Time.Minute);
-            ptoJ = sumTOJ / (simulacion.Time.Hour * 100 + simulacion.Time.Minute);
+            ptoJ = totalMinOcio / simulacion.CantJ / totalMinSimu;
         }
     }
 }

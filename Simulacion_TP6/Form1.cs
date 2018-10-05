@@ -12,6 +12,7 @@ namespace Simulacion_TP6
     public partial class Form1 : Form
     {
         private clSimu simulacion;
+        private int cantS, cantSS, cantJ;
 
         public Form1()
         {
@@ -37,11 +38,26 @@ namespace Simulacion_TP6
 
         private void btnIniciar_Click(object sender, EventArgs e)
         {
-            simulacion = new clSimu(Convert.ToInt32(txtCantS.Text),
-                                    Convert.ToInt32(txtCantSS.Text),
-                                    Convert.ToInt32(txtCantJ.Text));
+            //Leer valores de las variables de control
+            if (txtCantS.Text == "") { cantS = 0; }
+            else { cantS = Convert.ToInt32(txtCantS.Text); }
 
-            simulacion.Iniciar();
+            if (txtCantSS.Text == "") { cantSS = 0; }
+            else { cantSS = Convert.ToInt32(txtCantSS.Text); }
+
+            if (txtCantJ.Text == "") { cantJ = 0; }
+            else { cantJ = Convert.ToInt32(txtCantJ.Text); }
+
+            //Correr la simulación
+            simulacion = new clSimu(cantS, cantSS, cantJ);
+            clSimuResultados resultados = simulacion.Iniciar();
+
+            //Mostrar resultados
+            string msg = "Cantidad Sr: " + cantS.ToString() + " -  Cantidad Ssr:" + cantSS.ToString() + " Cantidad Jr: " + cantJ.ToString() + Environment.NewLine +
+                         "TMEA:" + resultados.TMEA + " // TMEN:" + resultados.TMEN + " // TMEB: " + resultados.TMEB + Environment.NewLine +
+                         "TMAA:" + resultados.TMAA + " // TMAN:" + resultados.TMAN + " // TMAB: " + resultados.TMAB + Environment.NewLine +
+                         "PTOS:" + resultados.PTOS + " // PTOSS:" + resultados.PTOSS + " // PTOJ: " + resultados.PTOJ;
+            txtResultados.Text = msg; // MessageBox.Show(msg);
         }
     }
 }

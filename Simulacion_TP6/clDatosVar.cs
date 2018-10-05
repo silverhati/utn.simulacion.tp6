@@ -126,5 +126,52 @@ namespace Simulacion_TP6
                 return "B"; //Prioridad BAJA
             else return "N"; //Prioridad NORMAL
         }
+
+        //Método auxiliares
+        static public DateTime SumarTiempos(DateTime pT, double pTA)
+        {
+            //Sumar cierta cant de minutos al datetime, teniendo en cuenta que el HORARIO LABORAL es de L a V de 9 a 18hs
+            DateTime inicio = new DateTime(pT.Year, pT.Month, pT.Day, 9, 0, 0);
+            DateTime fin = new DateTime(pT.Year, pT.Month, pT.Day, 18, 0, 0);
+            //Sumo minutos
+            DateTime fechaActualizada = pT.AddMinutes(pTA);
+            //Si esta en el medio retorna la fecha correspondiente
+            if (fechaActualizada < fin && fechaActualizada > inicio)
+            {
+                return fechaActualizada;
+            }
+            else if (fechaActualizada > fin)
+            {
+                //La fecha es mayor y hay q modificarla
+                //Primero consigo la diferencia entre la fecha fin y la recibida(actualizada), esa diferencia es la que se suma al dia siguiente
+                TimeSpan diferencia = fechaActualizada - fin;
+                //Calcular: si la fecha es viernes pasa para lunes
+                if (pT.DayOfWeek.ToString().Equals("Friday"))
+                {
+                    return inicio.AddDays(3).Add(diferencia);
+                }
+                else
+                {
+                    return inicio.AddDays(1).Add(diferencia);
+                }
+            }
+            else
+            {
+                return fechaActualizada;
+            }
+        }
+
+        static public double RestarFechas(DateTime iFechaFin, DateTime iFechaIni)
+        {
+            //TODO: RestarFechas() - Resta dos fechas, devuelve resultado en minutos
+            // Contemplar días y horarios laborales
+            TimeSpan span;
+
+            //if (iFechaFin.Date == iFechaIni.Date)
+            //{
+                span = iFechaFin.Subtract(iFechaIni);
+                return Convert.ToDouble(span.TotalMinutes);
+            //}            
+        }
     }
 }

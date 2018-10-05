@@ -15,48 +15,49 @@ namespace Simulacion_TP6
         public int CantJ { get => cantJ; set => cantJ = value; }
 
         //Variables de Estado
-        private int nsA, nsN, nsB,
-                    nColaA, nColaN, nColaB;
+        private int nsA, nsN, nsB;
         public int NsA { get => nsA; set => nsA = value; }
         public int NsN { get => nsN; set => nsN = value; }
         public int NsB { get => nsB; set => nsB = value; }
-        public int NColaA { get => nColaA; set => nColaA = value; }
-        public int NColaN { get => nColaN; set => nColaN = value; }
-        public int NColaB { get => nColaB; set => nColaB = value; }
 
-        //Otras
-        DateTime T;
-        public DateTime Time { get => T; set => T = value; }
-        DateTime TF;
-        DateTime TPLL;        
-        DateTime HV = new DateTime(9999, 12, 31, 23, 59, 59);        
-        List<clPuesto> puestos_S, puestos_SS, puestos_J;
-        public List<clPuesto> puestosS { get => puestos_S; }
-        public List<clPuesto> puestosSS { get => puestos_SS; }
-        public List<clPuesto> puestosJ { get => puestos_J; }
-        clSimuResultados resultados;
-        bool procesar = true;
-        const string cRecursoS = "S",
-                     cRecursoSS = "SS",
-                     cRecursoJ = "J",
-                     cPrioridadAlta = "A",
-                     cPrioridadNormal = "N",
-                     cPrioridadBaja = "B";
-        double nTA, nTN, nTB;
-        double staTA, staTN, staTB, sSA, sSN, sSB,sLLA,sLLN,sLLB; //minutos
+        private List<clTicket> cola_A, cola_N, cola_B;
+        public List<clTicket> Cola_A { get => cola_A; set => cola_A = value; }
+        public List<clTicket> Cola_N { get => cola_N; set => cola_N = value; }
+        public List<clTicket> Cola_B { get => cola_B; set => cola_B = value; }
+
+        //Otras        
+        DateTime T,
+                 Tinicial,
+                 TF,     
+                 TPLL,
+                 HV = new DateTime(9999, 12, 31, 23, 59, 59);
+        public DateTime TiempoActual { get => T; }
+        public DateTime TiempoInicial { get => Tinicial; }
+        public DateTime TiempoFinal { get => TF; }
+
+        double nTA, nTN, nTB; //Cantidad de tickets que entraron al sistema
+        double secA, secN, secB; //Sumatorias de tiempos de Espera en cola, en minutos
+        double staTA, staTN, staTB; //Sumatorias de tiempos de atención, en minutos 
         public double NTA { get => nTA; set => nTA = value; }
         public double NTN { get => nTN; set => nTN = value; }
         public double NTB { get => nTB; set => nTB = value; }
+        public double SecA { get => secA; set => secA = value; }
+        public double SecN { get => secN; set => secN = value; }
+        public double SecB { get => secB; set => secB = value; }
         public double StaTA { get => staTA; set => staTA = value; }
         public double StaTN { get => staTN; set => staTN = value; }
         public double StaTB { get => staTB; set => staTB = value; }
-        public double Ssa { get => sSA; set => sSA = value; }
-        public double Ssn { get => sSN; set => sSN = value; }
-        public double Ssb { get => sSB; set => sSB = value; }
-        public double Slla { get => sLLA; set => sLLA = value; }
-        public double Slln { get => sLLN; set => sLLN = value; }
-        public double Sllb { get => sLLB; set => sLLB = value; }
 
+        List<clPuesto> puestos_S, puestos_SS, puestos_J;
+        public List<clPuesto> Puestos_S { get => puestos_S; }
+        public List<clPuesto> Puestos_SS { get => puestos_SS; }
+        public List<clPuesto> Puestos_J { get => puestos_J; }
+
+
+        bool procesar = true;
+        const string cPrioridadAlta = "A",
+                     cPrioridadNormal = "N",
+                     cPrioridadBaja = "B";   
 
         //Constructor
         public clSimu(int pCantS, int pCantSS, int pCantJ)
@@ -70,6 +71,7 @@ namespace Simulacion_TP6
         public clSimuResultados Iniciar()
         {            
             DateTime TpsS, TpsSS, TpsJ;
+            clSimuResultados resultados;
 
             //Inicializar variables
             this.CondicionesIniciales();
@@ -115,44 +117,51 @@ namespace Simulacion_TP6
                         TPLL = HV; //Vaciamiento
             }
 
-            //Devolver resultados de la simulación
-            resultados = this.CalcularResultados();
-            Console.WriteLine("Datos ingresados. Cantidad Sr:" + cantS + " Cantidad Ssr:"+ cantSS + " Cantidad Jr: "+cantJ);
-            Console.WriteLine("TMEA:" + resultados.TMEA + " TMEN:" + resultados.TMEN + " TMEB: " + resultados.TMEB);
-            Console.WriteLine("TMAA:" + resultados.TMAA + " TMAN:" + resultados.TMAN + " TMAB: " + resultados.TMAB);
-            Console.WriteLine("PTOS:" + resultados.PTOS + " PTOSS:" + resultados.PTOSS + " PTOJ: " + resultados.PTOJ);
+            //Calcular resultados de la simulación
+            resultados = new clSimuResultados(this);
+            resultados.Calcular();
             return resultados;
         }
         
         
         private void CondicionesIniciales()
         {
-            //Tiempo Próxima Llegada
-            TPLL = new DateTime(2019, 01, 01, 09, 00, 00);
+            //Tiempo Próxima Llegada (Tiempo Inicial)
+            Tinicial = new DateTime(2019, 01, 01, 09, 00, 00);
+            TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(2099, 12, 31, 18, 00, 00);
+            TF = new DateTime(2999, 01, 01, 18, 00, 00);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
             for (var index = 0; index < cantS; index++)
             {
-                puestos_S.Add(new clPuesto() { Tps = HV, Pta = null, Tipo = cRecursoS });
+                puestos_S.Add(new clPuesto() { Tipo = clPuesto.RecursoS(), Ticket = null, Tps = HV, Ito = Tinicial, Sto = 0});
             }
 
             //Inicializar puestos SEMI SENIOR
             puestos_SS = new List<clPuesto>();
             for (var index = 0; index < cantSS; index++)
             {
-                puestos_SS.Add(new clPuesto() { Tps = HV, Pta = null, Tipo = cRecursoSS });
+                puestos_SS.Add(new clPuesto() { Tipo = clPuesto.RecursoSS(), Ticket = null, Tps = HV, Ito = Tinicial, Sto = 0 });
             }
 
             //Inicializar puestos JUNIOR
             puestos_J = new List<clPuesto>();
             for (var index = 0; index < cantJ; index++)
             {
-                puestos_J.Add(new clPuesto() { Tps = HV, Pta = null, Tipo = cRecursoJ });
+                puestos_J.Add(new clPuesto() { Tipo = clPuesto.RecursoJ(), Ticket = null, Tps = HV, Ito = Tinicial, Sto = 0 });
             }
+
+            //Inicializar cola de tickets prioridad ALTA
+            Cola_A = new List<clTicket>();
+
+            //Inicializar cola de tickets prioridad NORMAL
+            Cola_N = new List<clTicket>();
+
+            //Inicializar cola de tickets prioridad BAJA
+            Cola_B = new List<clTicket>();
         }
 
         private void ProcesarLlegada()
@@ -164,7 +173,7 @@ namespace Simulacion_TP6
             
             //Próxima llegada (EFNC)
             IA = clDatosVar.GenerarIA();
-            TPLL = this.SumarTiempos(T, IA);
+            TPLL = clDatosVar.SumarTiempos(T, IA);
 
             //Determinar prioridad del nuevo ticket
             prioridadTicket = clDatosVar.GenerarPrioridadTicket();
@@ -179,232 +188,180 @@ namespace Simulacion_TP6
 
         private void ProcesarLlegadaA()
         {
-            double TA;
+            clTicket ticket;
             string prioridadTicket = cPrioridadAlta;
 
+            //Llegada de un nuevo ticket
             nsA += 1; //Actualizar el NS correspondiente
-            sLLA += T.Hour * 100 + T.Minute;
+            nTA += 1; //Actualizar el NT correspondiente
+            ticket = new clTicket(prioridadTicket);
+            ticket.Tll = T; //tiempo de llegada del ticket
 
             if (puestos_S[puestos_S.Count - 1].Tps == HV)
             {
-                //Si hay un puesto SENIOR libre, toma el ticket
-                puestos_S[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_S[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_S(); //Generar tiempo de atención
-                puestos_S[puestos_S.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                staTA += (T.Hour * 100 + T.Minute);
-                puestos_S[puestos_S.Count - 1].Pta = prioridadTicket;
+                //Si hay un puesto SENIOR libre, toma el ticket      
+                staTA += puestos_S[puestos_S.Count - 1].AtenderTicket(ticket, T);                     
+                
+                //El puesto deja de estar ocioso
+                puestos_S[puestos_S.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_S[puestos_S.Count - 1].Ito);
+                puestos_S[puestos_S.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
-            else if (puestos_S[puestos_SS.Count - 1].Tps == HV)
+            else if (puestos_SS[puestos_SS.Count - 1].Tps == HV)
             {
-                //Si hay un puesto SEMI SENIOR libre, toma el ticket
-                puestos_SS[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_SS[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_SS(); //Generar tiempo de atención
-                puestos_SS[puestos_SS.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                staTA += (T.Hour * 100 + T.Minute);
-                puestos_SS[puestos_SS.Count - 1].Pta = prioridadTicket;
+                //Si hay un puesto SEMI SENIOR libre, toma el ticket           
+                staTA += puestos_SS[puestos_SS.Count - 1].AtenderTicket(ticket, T);                
+
+                //El puesto deja de estar ocioso
+                puestos_SS[puestos_SS.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_SS[puestos_SS.Count - 1].Ito);
+                puestos_SS[puestos_SS.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else if (puestos_J[puestos_J.Count - 1].Tps == HV)
             {
-                //Si hay un puesto JUNIOR libre, toma el ticket
-                puestos_J[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_J[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_J(); //Generar tiempo de atención
-                puestos_J[puestos_J.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                staTA += (T.Hour * 100 + T.Minute);
-                puestos_J[puestos_J.Count - 1].Pta = prioridadTicket;
+                //Si hay un puesto JUNIOR libre, toma el ticket       
+                staTA += puestos_J[puestos_J.Count - 1].AtenderTicket(ticket, T);                
+
+                //El puesto deja de estar ocioso
+                puestos_J[puestos_J.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_J[puestos_J.Count - 1].Ito);
+                puestos_J[puestos_J.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else
                 //Nadie lo pueda atender y el ticket queda encolado
-                nColaA += 1;
+                cola_A.Add(ticket);
         }
 
         private void ProcesarLlegadaN()
         {
-            double TA;
+            clTicket ticket;
             string prioridadTicket = cPrioridadNormal;
 
+            //Llegada de un nuevo ticket
             nsN += 1; //Actualizar el NS correspondiente
-            sLLN += T.Hour * 100 + T.Minute;
-
+            nTN += 1; //Actualizar el NT correspondiente
+            ticket = new clTicket(prioridadTicket);
+            ticket.Tll = T; //tiempo de llegada del ticket
+          
             if (puestos_SS[puestos_SS.Count - 1].Tps == HV)
             {
-                //Si hay un puesto SEMI SENIOR libre, toma el ticket
-                puestos_SS[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_SS[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_SS(); //Generar tiempo de atención
-                puestos_SS[puestos_SS.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                staTN += (T.Hour * 100 + T.Minute);
-                puestos_SS[puestos_SS.Count - 1].Pta = prioridadTicket;
+                //Si hay un puesto SEMI SENIOR libre, toma el ticket   
+                staTN += puestos_SS[puestos_SS.Count - 1].AtenderTicket(ticket, T);
+
+                //El puesto deja de estar ocioso
+                puestos_SS[puestos_SS.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_SS[puestos_SS.Count - 1].Ito);
+                puestos_SS[puestos_SS.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else if (puestos_S[puestos_S.Count - 1].Tps == HV)
             {
-                //Si hay un puesto SENIOR libre, toma el ticket
-                puestos_S[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_S[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_S(); //Generar tiempo de atención
-                puestos_S[puestos_S.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                staTN += (T.Hour * 100 + T.Minute);
-                puestos_S[puestos_S.Count - 1].Pta = prioridadTicket;                
+                //Si hay un puesto SENIOR libre, toma el ticket           
+                staTN += puestos_S[puestos_S.Count - 1].AtenderTicket(ticket, T);                
+
+                //El puesto deja de estar ocioso
+                puestos_S[puestos_S.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_S[puestos_S.Count - 1].Ito);
+                puestos_S[puestos_S.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else if (puestos_J[puestos_J.Count - 1].Tps == HV)
             {
-                //Si hay un puesto JUNIOR libre, toma el ticket
-                puestos_J[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_J[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_J(); //Generar tiempo de atención
-                puestos_J[puestos_J.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                staTN += (T.Hour * 100 + T.Minute);
-                puestos_J[puestos_J.Count - 1].Pta = prioridadTicket;
+                //Si hay un puesto JUNIOR libre, toma el ticket           
+                staTN += puestos_J[puestos_J.Count - 1].AtenderTicket(ticket, T);                
+
+                //El puesto deja de estar ocioso
+                puestos_J[puestos_J.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_J[puestos_J.Count - 1].Ito);
+                puestos_J[puestos_J.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else
                 //Nadie lo pueda atender y el ticket queda encolado
-                nColaN += 1;
+                cola_N.Add(ticket);            
         }
 
         private void ProcesarLlegadaB()
         {
-            double TA;
+            clTicket ticket;
             string prioridadTicket = cPrioridadBaja;
 
+            //Llegada de un nuevo ticket
             nsB += 1; //Actualizar el NS correspondiente
-            sLLN += T.Hour * 100 + T.Minute;
+            nTB += 1; //Actualizar el NT correspondiente
+            ticket = new clTicket(prioridadTicket);
+            ticket.Tll = T; //tiempo de llegada del ticket
 
             if (puestos_J[puestos_J.Count - 1].Tps == HV)
             {
-                //Si hay un puesto JUNIOR libre, toma el ticket
-                puestos_J[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_J[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_J(); //Generar tiempo de atención
-                puestos_J[puestos_J.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                puestos_J[puestos_J.Count - 1].Pta = prioridadTicket;
-                staTB += (T.Hour * 100 + T.Minute);
+                //Si hay un puesto JUNIOR libre, toma el ticket           
+                staTB += puestos_J[puestos_J.Count - 1].AtenderTicket(ticket, T);
+                
+                //El puesto deja de estar ocioso
+                puestos_J[puestos_J.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_J[puestos_J.Count - 1].Ito);
+                puestos_J[puestos_J.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else if (puestos_SS[puestos_SS.Count - 1].Tps == HV)
             {
-                //Si hay un puesto SEMI SENIOR libre, toma el ticket
-                puestos_SS[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_SS[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_SS(); //Generar tiempo de atención
-                puestos_SS[puestos_SS.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                puestos_SS[puestos_SS.Count - 1].Pta = prioridadTicket;
-                staTB += (T.Hour * 100 + T.Minute);
+                //Si hay un puesto SEMI SENIOR libre, toma el ticket           
+                staTB += puestos_SS[puestos_SS.Count - 1].AtenderTicket(ticket, T);
+                
+                //El puesto deja de estar ocioso
+                puestos_SS[puestos_SS.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_SS[puestos_SS.Count - 1].Ito);
+                puestos_SS[puestos_SS.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else if (puestos_S[puestos_S.Count - 1].Tps == HV)
             {
-                //Si hay un puesto SENIOR libre, toma el ticket
-                puestos_S[puestos_S.Count - 1].Sto += ((T.Hour * 100 + T.Minute) - puestos_S[puestos_S.Count - 1].Ito); //Calculo el STO
-                TA = clDatosVar.GenerarTA_S(); //Generar tiempo de atención
-                puestos_S[puestos_S.Count - 1].Tps = this.SumarTiempos(T, TA); //Tps de este ticket
-                puestos_S[puestos_S.Count - 1].Pta = prioridadTicket;
-                staTB += (T.Hour * 100 + T.Minute);
+                //Si hay un puesto SENIOR libre, toma el ticket           
+                staTB += puestos_S[puestos_S.Count - 1].AtenderTicket(ticket, T);;
+
+                //El puesto deja de estar ocioso
+                puestos_S[puestos_S.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_S[puestos_S.Count - 1].Ito);
+                puestos_S[puestos_S.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else
                 //Nadie lo pueda atender y el ticket queda encolado
-                nColaB += 1;
+                cola_B.Add(ticket);            
         }
 
 
         private void ProcesarSalida(ref List<clPuesto> pPuestos, int pIndex)
-        {
-            double TA;
-            T = pPuestos[pIndex].Tps; //Avance del tiempo
+        {            
+            //Avance del tiempo
+            T = pPuestos[pIndex].Tps;
 
-            //Actualizar el NS correspondiente a la salida
-            if (String.Compare(pPuestos[pIndex].Pta, cPrioridadAlta) == 0)
-                nsA -= 1; //Prioridad ALTA
-            else if (String.Compare(pPuestos[pIndex].Pta, cPrioridadNormal) == 0)
-                nsN -= 1; //Prioridad NORMAL
+            //Sale el ticket            
+            //Actualizar el NS correspondiente a la salida 
+            if (String.Compare(pPuestos[pIndex].Pta(), cPrioridadAlta) == 0)
+            { nsA -= 1; }  //Prioridad ALTA   
+            else if (String.Compare(pPuestos[pIndex].Pta(), cPrioridadNormal) == 0)
+            { nsN -= 1; }  //Prioridad NORMAL 
             else
-                nsB -= 1; //Prioridad BAJA
+            { nsB -= 1; }  //Prioridad BAJA            
 
-            //Se continuará atendiendo mientras haya tickets encolados
-            if (nColaA >= 1)
+            //El puesto continuará atendiendo mientras haya tickets encolados
+            if (Cola_A.Count >= 1)
             {
-                nColaA -= 1;
-                pPuestos[pIndex].Pta = cPrioridadAlta;// Prioridad del nuevo ticket asignado
-                TA = calcularTiempoAtencionTicket(pPuestos[pIndex]);
-                pPuestos[pIndex].Tps = this.SumarTiempos(T, TA);
-                staTA += TA;
-                nTA++;
-                sSA+=T.Hour*100+T.Minute;
+                //Atender ticket de prioridad ALTA
+                staTA += pPuestos[pIndex].AtenderTicket(Cola_A[0], T); //sumarizamos tiempos de atención tickets de prioridad ALTA
+                Cola_A.RemoveAt(0); //disminuye la cola tickets prioridad ALTA                
+                secA += pPuestos[pIndex].Ticket.Tesperacola; //Sumatoria tiempos de espera en Cola ALTA
             }
-            else if (nColaN >= 1)
+            else if (Cola_N.Count >= 1)
             {
-                nColaN -= 1;
-                pPuestos[pIndex].Pta = cPrioridadNormal;// Prioridad del nuevo ticket asignado
-                TA = calcularTiempoAtencionTicket(pPuestos[pIndex]);
-                pPuestos[pIndex].Tps = this.SumarTiempos(T, TA);
-                staTN += TA;
-                nTN++;
-                sSN+= T.Hour * 100 + T.Minute;
+                //Atender ticket de prioridad NORMAL
+                staTN += pPuestos[pIndex].AtenderTicket(Cola_N[0], T);  //sumarizamos tiempos de atención tickets de prioridad NORMAL
+                Cola_N.RemoveAt(0); //disminuye la cola tickets prioridad NORMAL                
+                secN += pPuestos[pIndex].Ticket.Tesperacola; //Sumatoria tiempos de espera en Cola NORMAL
             }
-            else if (nColaB >= 1)
+            else if (Cola_B.Count >= 1)
             {
-                nColaB -= 1;
-                pPuestos[pIndex].Pta = cPrioridadBaja;// Prioridad del nuevo ticket asignado
-                TA = calcularTiempoAtencionTicket(pPuestos[pIndex]);
-                pPuestos[pIndex].Tps = this.SumarTiempos(T, TA);
-                staTB += TA;
-                nTB++;
-                sSB += T.Hour * 100 + T.Minute;
+                //Atender ticket de prioridad BAJA
+                staTB += pPuestos[pIndex].AtenderTicket(Cola_B[0], T); //sumarizamos tiempos de atención tickets de prioridad BAJA
+                Cola_B.RemoveAt(0); //disminuye la cola tickets prioridad BAJA                                    
+                secB += pPuestos[pIndex].Ticket.Tesperacola; //Sumatoria tiempos de espera en Cola BAJA
             }
             else
             {
                 //El puesto queda vacío
-                pPuestos[pIndex].Pta = null; 
+                pPuestos[pIndex].Ticket = null; 
                 pPuestos[pIndex].Tps = HV;
-                pPuestos[pIndex].Ito = T.Hour*100+T.Minute;
+                pPuestos[pIndex].Ito = T;
             }                            
 
         }
 
-        private double calcularTiempoAtencionTicket(clPuesto puesto)
-        {
-            double TA = 0;
-            //Generar el tiempo de atención
-            if (String.Compare(puesto.Tipo, cRecursoS) == 0)
-                TA = clDatosVar.GenerarTA_S();
-            else if (String.Compare(puesto.Tipo, cRecursoSS) == 0)
-                TA = clDatosVar.GenerarTA_SS();
-            else
-                TA = clDatosVar.GenerarTA_J();
-
-            return TA;
-        }
-
-        private clSimuResultados CalcularResultados()
-        {
-            //TODO: calcularResultados()
-            clSimuResultados resultados = new clSimuResultados(this);
-            resultados.calcular();
-            return resultados;
-        }
-
-        private DateTime SumarTiempos(DateTime pT, double pTA)
-        {
-            //Sumar cierta cant de minutos al datetime, teniendo en cuenta que el HORARIO LABORAL es de L a V de 9 a 18hs
-            DateTime inicio = new DateTime(pT.Year, pT.Month, pT.Day,9,0,0);
-            DateTime fin = new DateTime(pT.Year, pT.Month, pT.Day, 18, 0, 0);
-            //Sumo minutos
-            DateTime fechaActualizada = pT.AddMinutes(pTA);
-            //Si esta en el medio retorna la fecha correspondiente
-            if (fechaActualizada<fin && fechaActualizada>inicio)
-            {
-                return fechaActualizada;
-            }
-            else if (fechaActualizada > fin)
-            {
-                //La fecha es mayor y hay q modificarla
-                //Primero consigo la diferencia entre la fecha fin y la recibida(actualizada), esa diferencia es la que se suma al dia siguiente
-                TimeSpan diferencia = fechaActualizada - fin;
-                //Calcular: si la fecha es viernes pasa para lunes
-                if (pT.DayOfWeek.ToString().Equals("Friday"))
-                {
-                    return inicio.AddDays(3).Add(diferencia);
-                }
-                else {
-                    return inicio.AddDays(1).Add(diferencia);
-                }
-            }
-            else
-            {
-                return fechaActualizada;
-            }
-        }
     }
 
 
