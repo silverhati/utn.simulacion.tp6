@@ -127,7 +127,7 @@ namespace Simulacion_TP6
              * NORMAL: 68,96%
              * BAJA: 16,62 %
             */
-            Random random = new Random();
+            //Random random = new Random(); //uso un unico random en todo el programa, mejora la aleatoriedad
             int number = random.Next(0, 10000);
 
             if (number <= 1442)

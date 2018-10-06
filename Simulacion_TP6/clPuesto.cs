@@ -7,11 +7,13 @@ namespace Simulacion_TP6
 {
     public class clPuesto : IComparable<clPuesto>
     {
+        private static Int64 idSeed = 0;
         private string tipo;  //Tipo recurso: S, SS, J
         private clTicket ticket; //ticket asignado
         private DateTime tps; //Tiempo próxima salida        
         private DateTime ito; //Inicio tiempo ocioso
         private double sto; //Sumatoria tiempo ociosio
+        private Int64 id = idSeed++;
 
         public string Tipo { get => tipo; set => tipo = value; }
         public clTicket Ticket { get => ticket; set => ticket = value; }
