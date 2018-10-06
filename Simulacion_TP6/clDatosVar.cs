@@ -12,11 +12,21 @@ namespace Simulacion_TP6
 
         static public double GenerarIA()
         {
+            Double b = 1000; //tuvimos que ponerle un limite a la funcion inversa porque daba valores gigantes (?)
             Double a = 1; //dominio funcion: a < x < infinito
             Double potencia1 = 2.551150568906;
             Double potencia2 = 0.39198;
 
-            return Math.Pow((Math.Pow(a, potencia2))/(1 - random.NextDouble() * Math.Pow(a, potencia2)), potencia1);
+            Double result;
+
+            do
+            {
+
+                result = Math.Pow((Math.Pow(a, potencia2)) / (1 - random.NextDouble() * Math.Pow(a, potencia2)), potencia1);
+
+            } while (result > b);
+
+            return result;
         }
         static public double GenerarTA_S()
         {
