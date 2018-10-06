@@ -122,23 +122,6 @@ namespace Simulacion_TP6
             resultados = new clSimuResultados(this);
             resultados.Calcular();
 
-            /*
-            System.IO.StreamWriter Resultados;
-            Resultados = File.CreateText("C:\\ResultadosCSV.txt");
-
-            Resultados.WriteLine(
-                
-                resultados.TMEA + "" + resultados.TMEN + "" + resultados.TMEB + "" +
-
-                resultados.TMAA + "" + resultados.TMAN + "" + resultados.TMAB + "" +
-
-                resultados.PTOS + "" + resultados.PTOSS + "" + resultados.PTOJ
-
-                );
-
-            Resultados.Close();
-            */
-
             string path = @"C:\\ResultadosCSV.txt";
 
             if (!File.Exists(path))
@@ -148,6 +131,16 @@ namespace Simulacion_TP6
                 using (TextWriter tw = new StreamWriter(path))
                 {
                     tw.WriteLine(
+
+                        "Cantidad Senior" + ";" + "Cantidad SemiSenior" + ";" + "Cantidad Junior" + ";" +
+
+                        "TMEA" + ";" + "TMEN" + ";" + "TMEB" + ";" +
+
+                        "TMAA" + ";" + "TMAN" + ";" + "TMAB" + ";" +
+
+                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + ";" +
+
+                        this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
 
                         resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
 
@@ -164,6 +157,8 @@ namespace Simulacion_TP6
                 using (TextWriter tw = new StreamWriter(path))
                 {
                     tw.WriteLine(
+
+                        this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
 
                         resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
 
@@ -182,11 +177,11 @@ namespace Simulacion_TP6
         private void CondicionesIniciales()
         {
             //Tiempo Próxima Llegada (Tiempo Inicial)
-            Tinicial = new DateTime(2019, 01, 01, 09, 00, 00);
+            Tinicial = new DateTime(2019, 01, 01, 00, 00, 00);
             TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(2119, 01, 01, 18, 00, 00);
+            TF = new DateTime(9999, 12, 31, 23, 59, 59);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
