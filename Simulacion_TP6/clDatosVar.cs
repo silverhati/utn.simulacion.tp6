@@ -145,7 +145,6 @@ namespace Simulacion_TP6
 
         static public double RestarFechas(DateTime iFechaFin, DateTime iFechaIni)
         {
-
             TimeSpan span;
             span = iFechaFin.Subtract(iFechaIni);
             return Convert.ToDouble(span.TotalMinutes);

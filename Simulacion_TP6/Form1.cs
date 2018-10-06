@@ -56,7 +56,7 @@ namespace Simulacion_TP6
             string msg = "Cantidad Sr: " + cantS.ToString() + " -  Cantidad Ssr:" + cantSS.ToString() + " Cantidad Jr: " + cantJ.ToString() + Environment.NewLine +
                          "TMEA:" + resultados.TMEA + " // TMEN:" + resultados.TMEN + " // TMEB: " + resultados.TMEB + Environment.NewLine +
                          "TMAA:" + resultados.TMAA + " // TMAN:" + resultados.TMAN + " // TMAB: " + resultados.TMAB + Environment.NewLine +
-                         "PTOS:" + resultados.PTOS + " // PTOSS:" + resultados.PTOSS + " // PTOJ: " + resultados.PTOJ;
+                         "PTOS:" + resultados.PTOS + " // PTOSS:" + resultados.PTOSS + " // PTOJ: " + resultados.PTOJ + " // PTOGral: " + resultados.PtoGral;
             txtResultados.Text = msg; // MessageBox.Show(msg);
         }
     }
