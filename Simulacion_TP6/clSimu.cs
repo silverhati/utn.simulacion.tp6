@@ -146,7 +146,7 @@ namespace Simulacion_TP6
 
                         resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
 
-                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + Environment.NewLine
 
                         );
                 }
@@ -164,7 +164,7 @@ namespace Simulacion_TP6
 
                         resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
 
-                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + Environment.NewLine
 
                         );
                 }
@@ -181,7 +181,7 @@ namespace Simulacion_TP6
             TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(9999, 12, 31, 23, 59, 59);
+            TF = new DateTime(2024, 12, 31, 23, 59, 59);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
