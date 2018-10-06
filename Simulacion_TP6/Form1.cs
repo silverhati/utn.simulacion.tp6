@@ -26,6 +26,25 @@ namespace Simulacion_TP6
             txtCantJ.KeyPress += new KeyPressEventHandler(onlyNumeric_KeyPress);
         }
 
+        private void txtCantS_TextChanged(object sender, EventArgs e)
+        {
+            this.SetButton();
+        }
+        private void SetButton()
+        {
+            btnIniciar.Enabled = (txtCantS.Text != "") && (txtCantSS.Text != "") && (txtCantJ.Text != "");
+        }
+
+        private void txtCantSS_TextChanged(object sender, EventArgs e)
+        {
+            this.SetButton();
+        }
+
+        private void txtCantJ_TextChanged(object sender, EventArgs e)
+        {
+            this.SetButton();
+        }
+
         static public void onlyNumeric_KeyPress(object sender, KeyPressEventArgs e)
         {
             //Permitir sólo datos numéricos
@@ -38,6 +57,10 @@ namespace Simulacion_TP6
 
         private void btnIniciar_Click(object sender, EventArgs e)
         {
+            txtResultados.Text = "";
+            btnIniciar.Text = "Calculando...";
+            btnIniciar.Enabled = false;
+
             //Leer valores de las variables de control
             if (txtCantS.Text == "") { cantS = 0; }
             else { cantS = Convert.ToInt32(txtCantS.Text); }
@@ -58,6 +81,9 @@ namespace Simulacion_TP6
                          "TMAA:" + resultados.TMAA + " // TMAN:" + resultados.TMAN + " // TMAB: " + resultados.TMAB + Environment.NewLine +
                          "PTOS:" + resultados.PTOS + " // PTOSS:" + resultados.PTOSS + " // PTOJ: " + resultados.PTOJ + " // PTOGral: " + resultados.PtoGral;
             txtResultados.Text = msg; // MessageBox.Show(msg);
+
+            btnIniciar.Enabled = true;
+            btnIniciar.Text = "Iniciar Simulación";
         }
     }
 }
