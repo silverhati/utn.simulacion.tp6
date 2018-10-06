@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -120,6 +121,60 @@ namespace Simulacion_TP6
             //Calcular resultados de la simulación
             resultados = new clSimuResultados(this);
             resultados.Calcular();
+
+            /*
+            System.IO.StreamWriter Resultados;
+            Resultados = File.CreateText("C:\\ResultadosCSV.txt");
+
+            Resultados.WriteLine(
+                
+                resultados.TMEA + "" + resultados.TMEN + "" + resultados.TMEB + "" +
+
+                resultados.TMAA + "" + resultados.TMAN + "" + resultados.TMAB + "" +
+
+                resultados.PTOS + "" + resultados.PTOSS + "" + resultados.PTOJ
+
+                );
+
+            Resultados.Close();
+            */
+
+            string path = @"C:\\ResultadosCSV.txt";
+
+            if (!File.Exists(path))
+            {
+                File.Create(path).Dispose();
+
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(
+
+                        resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
+
+                        resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
+
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+
+                        );
+                }
+
+            }
+            else if (File.Exists(path))
+            {
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(
+
+                        resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
+
+                        resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
+
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+
+                        );
+                }
+            }
+
             return resultados;
         }
         
