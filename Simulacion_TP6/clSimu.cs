@@ -122,12 +122,10 @@ namespace Simulacion_TP6
             resultados = new clSimuResultados(this);
             resultados.Calcular();
 
-            string path = @"C:\\ResultadosCSV.txt";
+            String path = "C:\\ResultadosCSV.txt";
 
             if (!File.Exists(path))
             {
-                File.Create(path).Dispose();
-
                 using (TextWriter tw = new StreamWriter(path))
                 {
                     tw.WriteLine(
@@ -138,7 +136,7 @@ namespace Simulacion_TP6
 
                         "TMAA" + ";" + "TMAN" + ";" + "TMAB" + ";" +
 
-                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + ";" +
+                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + Environment.NewLine +
 
                         this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
 
@@ -150,24 +148,17 @@ namespace Simulacion_TP6
 
                         );
                 }
-
             }
-            else if (File.Exists(path))
+            else
             {
-                using (TextWriter tw = new StreamWriter(path))
-                {
-                    tw.WriteLine(
-
+                File.AppendAllText(path,
                         this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
 
                         resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
 
                         resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
 
-                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
-
-                        );
-                }
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + Environment.NewLine);
             }
 
             return resultados;
