@@ -63,6 +63,7 @@
             this.txtCantJ.Name = "txtCantJ";
             this.txtCantJ.Size = new System.Drawing.Size(43, 20);
             this.txtCantJ.TabIndex = 5;
+            this.txtCantJ.TextChanged += new System.EventHandler(this.txtCantJ_TextChanged);
             // 
             // txtCantSS
             // 
@@ -70,6 +71,7 @@
             this.txtCantSS.Name = "txtCantSS";
             this.txtCantSS.Size = new System.Drawing.Size(43, 20);
             this.txtCantSS.TabIndex = 4;
+            this.txtCantSS.TextChanged += new System.EventHandler(this.txtCantSS_TextChanged);
             // 
             // txtCantS
             // 
@@ -77,6 +79,7 @@
             this.txtCantS.Name = "txtCantS";
             this.txtCantS.Size = new System.Drawing.Size(43, 20);
             this.txtCantS.TabIndex = 3;
+            this.txtCantS.TextChanged += new System.EventHandler(this.txtCantS_TextChanged);
             // 
             // label3
             // 
@@ -107,6 +110,7 @@
             // 
             // btnIniciar
             // 
+            this.btnIniciar.Enabled = false;
             this.btnIniciar.Location = new System.Drawing.Point(149, 185);
             this.btnIniciar.Name = "btnIniciar";
             this.btnIniciar.Size = new System.Drawing.Size(75, 39);
@@ -135,6 +139,7 @@
             // 
             // Form1
             // 
+            this.AcceptButton = this.btnIniciar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(369, 457);
