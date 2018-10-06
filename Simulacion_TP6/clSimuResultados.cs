@@ -17,6 +17,7 @@ namespace Simulacion_TP6
         private double ptoS;
         private double ptoSS;
         private double ptoJ;
+        private double ptoGral;
         public double TMEA { get => tMEA; }
         public double TMEN { get => tMEN; }
         public double TMEB { get => tMEB; }
@@ -26,6 +27,7 @@ namespace Simulacion_TP6
         public double PTOS { get => ptoS; }
         public double PTOSS { get => ptoSS; }
         public double PTOJ { get => ptoJ; }
+        public double PtoGral { get => ptoGral; }
 
         public clSimuResultados(clSimu simu)
         {
@@ -87,6 +89,8 @@ namespace Simulacion_TP6
                 }
             }
             ptoJ = totalMinOcio / simulacion.CantJ / totalMinSimu;
+
+            ptoGral = (ptoS + ptoSS + ptoJ) / 3;
         }
     }
 }

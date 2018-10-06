@@ -131,7 +131,7 @@ namespace Simulacion_TP6
             TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(2119, 01, 01, 18, 00, 00);
+            TF = new DateTime(2020, 01, 01, 18, 00, 00);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
