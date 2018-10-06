@@ -81,7 +81,7 @@ namespace Simulacion_TP6
                 //Sumar total de tiempo ocioso de todos los puestos JUNIOR
                 totalMinOcio += simulacion.Puestos_J[i].Sto; 
                 if (simulacion.Puestos_J[i].Ito != DateTime.MinValue &&
-                    simulacion.Puestos_S[i].Ito <= simulacion.TiempoActual) //1/1/0001 00:00:00 
+                    simulacion.Puestos_J[i].Ito <= simulacion.TiempoActual) //1/1/0001 00:00:00 
                 {
                     totalMinOcio += clDatosVar.RestarFechas(simulacion.TiempoActual, simulacion.Puestos_J[i].Ito);
                 }
