@@ -8,7 +8,7 @@ namespace Simulacion_TP6
 {
     public class clSimu
     {
-        
+
         //Variables de Control
         private int cantS, cantSS, cantJ;
         public int CantS { get => cantS; set => cantS = value; }
@@ -29,7 +29,7 @@ namespace Simulacion_TP6
         //Otras        
         DateTime T,
                  Tinicial,
-                 TF,     
+                 TF,
                  TPLL,
                  HV = new DateTime(9999, 12, 31, 23, 59, 59);
         public DateTime TiempoActual { get => T; }
@@ -53,12 +53,18 @@ namespace Simulacion_TP6
         public List<clPuesto> Puestos_S { get => puestos_S; }
         public List<clPuesto> Puestos_SS { get => puestos_SS; }
         public List<clPuesto> Puestos_J { get => puestos_J; }
+        int idx_puesto_S_MayorTps,
+            idx_puesto_SS_MayorTps,
+            idx_puesto_J_MayorTps,
+            idx_puesto_S_MenorTps,
+            idx_puesto_SS_MenorTps,
+            idx_puesto_J_MenorTps;
 
 
         bool procesar = true;
         const string cPrioridadAlta = "A",
                      cPrioridadNormal = "N",
-                     cPrioridadBaja = "B";   
+                     cPrioridadBaja = "B";
 
         //Constructor
         public clSimu(int pCantS, int pCantSS, int pCantJ)
@@ -70,7 +76,7 @@ namespace Simulacion_TP6
 
         //Métodos
         public clSimuResultados Iniciar()
-        {            
+        {
             DateTime TpsS, TpsSS, TpsJ;
             clSimuResultados resultados;
 
@@ -79,25 +85,24 @@ namespace Simulacion_TP6
 
             while (procesar == true)
             {
-                //Ordenar puestos_S, puestos_SS y puestos_J por el tiempo de salida,
-                //de menor a mayor
-                puestos_S.Sort();
-                puestos_SS.Sort();
-                puestos_J.Sort();
+                //Obtener menores Tps para SENIOR, SEMI SENIOR y JUNIOR
+                idx_puesto_S_MenorTps = this.BuscarIdxMenorTps(puestos_S);
+                idx_puesto_SS_MenorTps = this.BuscarIdxMenorTps(puestos_SS);
+                idx_puesto_J_MenorTps = this.BuscarIdxMenorTps(puestos_J);
 
-                //Obtener el menor TPS para SENIOR, SEMI SENIOR y JUNIOR
+
                 if (puestos_S.Count != 0)
-                    TpsS = puestos_S[0].Tps;
+                    TpsS = puestos_S[idx_puesto_S_MenorTps].Tps;
                 else //En el caso de que no haya puestos SENIOR (variable de control cantS == 0)
                     TpsS = HV;
 
                 if (puestos_SS.Count != 0)
-                    TpsSS = puestos_SS[0].Tps;
+                    TpsSS = puestos_SS[idx_puesto_SS_MenorTps].Tps;
                 else //En el caso de que no haya puestos SEMI SENIOR (variable de control cantSS == 0)
                     TpsSS = HV;
 
                 if (puestos_J.Count != 0)
-                    TpsJ = puestos_J[0].Tps;
+                    TpsJ = puestos_J[idx_puesto_J_MenorTps].Tps;
                 else //En el caso de que no haya puestos JUNIOR (variable de control cantJ == 0)
                     TpsJ = HV;
 
@@ -105,11 +110,11 @@ namespace Simulacion_TP6
                 if (TPLL <= TpsS && TPLL <= TpsSS && TPLL <= TpsJ)
                 { this.ProcesarLlegada(); } //LLEGADA
                 else if (TpsS <= TpsSS && TpsS <= TpsJ)
-                { this.ProcesarSalida(ref puestos_S, 0); } //SALIDA SENIOR
+                { this.ProcesarSalida(ref puestos_S, idx_puesto_S_MenorTps); } //SALIDA SENIOR
                 else if (TpsSS <= TpsS && TpsSS <= TpsJ)
-                { this.ProcesarSalida(ref puestos_SS, 0); } //SALIDA SEMI SENIOR
+                { this.ProcesarSalida(ref puestos_SS, idx_puesto_SS_MenorTps); } //SALIDA SEMI SENIOR
                 else
-                { this.ProcesarSalida(ref puestos_J, 0); } //SALIDA JUNIOR
+                { this.ProcesarSalida(ref puestos_J, idx_puesto_J_MenorTps); } //SALIDA JUNIOR
 
                 if (T >= TF)
                     if (nsA + nsN + nsB == 0)
@@ -122,10 +127,12 @@ namespace Simulacion_TP6
             resultados = new clSimuResultados(this);
             resultados.Calcular();
 
-            String path = "C:\\ResultadosCSV.txt";
+            string path = @"C:\\ResultadosCSV.txt";
 
             if (!File.Exists(path))
             {
+                File.Create(path).Dispose();
+
                 using (TextWriter tw = new StreamWriter(path))
                 {
                     tw.WriteLine(
@@ -136,7 +143,25 @@ namespace Simulacion_TP6
 
                         "TMAA" + ";" + "TMAN" + ";" + "TMAB" + ";" +
 
-                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + Environment.NewLine +
+                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + ";" +
+
+                        this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
+
+                        resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
+
+                        resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
+
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+
+                        );
+                }
+
+            }
+            else if (File.Exists(path))
+            {
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(
 
                         this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
 
@@ -149,22 +174,11 @@ namespace Simulacion_TP6
                         );
                 }
             }
-            else
-            {
-                File.AppendAllText(path,
-                        this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
-
-                        resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
-
-                        resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
-
-                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + Environment.NewLine);
-            }
 
             return resultados;
         }
-        
-        
+
+
         private void CondicionesIniciales()
         {
             //Tiempo Próxima Llegada (Tiempo Inicial)
@@ -172,13 +186,13 @@ namespace Simulacion_TP6
             TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(3020, 01, 01, 18, 00, 00);
+            TF = new DateTime(2029, 01, 01, 23, 59, 59);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
             for (var index = 0; index < cantS; index++)
             {
-                puestos_S.Add(new clPuesto() { Tipo = clPuesto.RecursoS(), Ticket = null, Tps = HV, Ito = Tinicial, Sto = 0});
+                puestos_S.Add(new clPuesto() { Tipo = clPuesto.RecursoS(), Ticket = null, Tps = HV, Ito = Tinicial, Sto = 0 });
             }
 
             //Inicializar puestos SEMI SENIOR
@@ -211,7 +225,7 @@ namespace Simulacion_TP6
             string prioridadTicket;
 
             T = TPLL; //Avance del tiempo
-            
+
             //Próxima llegada (EFNC)
             IA = clDatosVar.GenerarIA();
             TPLL = clDatosVar.SumarTiempos(T, IA);
@@ -219,9 +233,14 @@ namespace Simulacion_TP6
             //Determinar prioridad del nuevo ticket
             prioridadTicket = clDatosVar.GenerarPrioridadTicket();
 
+            //Obtener Mayores Tps para SENIOR, SEMI SENIOR y JUNIOR
+            idx_puesto_S_MayorTps = this.BuscarIdxMayorTps(puestos_S);
+            idx_puesto_SS_MayorTps = this.BuscarIdxMayorTps(puestos_SS);
+            idx_puesto_J_MayorTps = this.BuscarIdxMayorTps(puestos_J);
+
             if (String.Compare(prioridadTicket, cPrioridadAlta) == 0)
                 this.ProcesarLlegadaA(); //Llegada ticket Prioridad ALTA
-            else if (String.Compare(prioridadTicket,cPrioridadNormal) == 0)
+            else if (String.Compare(prioridadTicket, cPrioridadNormal) == 0)
                 this.ProcesarLlegadaN(); //Llegada ticket Prioridad NORMAL
             else
                 this.ProcesarLlegadaB(); //Llegada ticket Prioridad BAJA
@@ -238,32 +257,32 @@ namespace Simulacion_TP6
             ticket = new clTicket(prioridadTicket);
             ticket.Tll = T; //tiempo de llegada del ticket
 
-            if (puestos_S[puestos_S.Count - 1].Tps == HV)
+            if (puestos_S[idx_puesto_S_MayorTps].Tps == HV)
             {
                 //Si hay un puesto SENIOR libre, toma el ticket      
-                staTA += puestos_S[puestos_S.Count - 1].AtenderTicket(ticket, T);                     
-                
+                staTA += puestos_S[idx_puesto_S_MayorTps].AtenderTicket(ticket, T);
+
                 //El puesto deja de estar ocioso
-                puestos_S[puestos_S.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_S[puestos_S.Count - 1].Ito);
-                puestos_S[puestos_S.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_S[idx_puesto_S_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_S[idx_puesto_S_MayorTps].Ito);
+                puestos_S[idx_puesto_S_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
-            else if (puestos_SS[puestos_SS.Count - 1].Tps == HV)
+            else if (puestos_SS[idx_puesto_SS_MayorTps].Tps == HV)
             {
                 //Si hay un puesto SEMI SENIOR libre, toma el ticket           
-                staTA += puestos_SS[puestos_SS.Count - 1].AtenderTicket(ticket, T);                
+                staTA += puestos_SS[idx_puesto_SS_MayorTps].AtenderTicket(ticket, T);
 
                 //El puesto deja de estar ocioso
-                puestos_SS[puestos_SS.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_SS[puestos_SS.Count - 1].Ito);
-                puestos_SS[puestos_SS.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_SS[idx_puesto_SS_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_SS[idx_puesto_SS_MayorTps].Ito);
+                puestos_SS[idx_puesto_SS_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
-            else if (puestos_J[puestos_J.Count - 1].Tps == HV)
+            else if (puestos_J[idx_puesto_J_MayorTps].Tps == HV)
             {
                 //Si hay un puesto JUNIOR libre, toma el ticket       
-                staTA += puestos_J[puestos_J.Count - 1].AtenderTicket(ticket, T);                
+                staTA += puestos_J[idx_puesto_J_MayorTps].AtenderTicket(ticket, T);
 
                 //El puesto deja de estar ocioso
-                puestos_J[puestos_J.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_J[puestos_J.Count - 1].Ito);
-                puestos_J[puestos_J.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_J[idx_puesto_J_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_J[idx_puesto_J_MayorTps].Ito);
+                puestos_J[idx_puesto_J_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else
                 //Nadie lo pueda atender y el ticket queda encolado
@@ -280,37 +299,37 @@ namespace Simulacion_TP6
             nTN += 1; //Actualizar el NT correspondiente
             ticket = new clTicket(prioridadTicket);
             ticket.Tll = T; //tiempo de llegada del ticket
-          
-            if (puestos_SS[puestos_SS.Count - 1].Tps == HV)
+
+            if (puestos_SS[idx_puesto_SS_MayorTps].Tps == HV)
             {
                 //Si hay un puesto SEMI SENIOR libre, toma el ticket   
-                staTN += puestos_SS[puestos_SS.Count - 1].AtenderTicket(ticket, T);
+                staTN += puestos_SS[idx_puesto_SS_MayorTps].AtenderTicket(ticket, T);
 
                 //El puesto deja de estar ocioso
-                puestos_SS[puestos_SS.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_SS[puestos_SS.Count - 1].Ito);
-                puestos_SS[puestos_SS.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_SS[idx_puesto_SS_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_SS[idx_puesto_SS_MayorTps].Ito);
+                puestos_SS[idx_puesto_SS_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
-            else if (puestos_S[puestos_S.Count - 1].Tps == HV)
+            else if (puestos_S[idx_puesto_S_MayorTps].Tps == HV)
             {
                 //Si hay un puesto SENIOR libre, toma el ticket           
-                staTN += puestos_S[puestos_S.Count - 1].AtenderTicket(ticket, T);                
+                staTN += puestos_S[idx_puesto_S_MayorTps].AtenderTicket(ticket, T);
 
                 //El puesto deja de estar ocioso
-                puestos_S[puestos_S.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_S[puestos_S.Count - 1].Ito);
-                puestos_S[puestos_S.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_S[idx_puesto_S_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_S[idx_puesto_S_MayorTps].Ito);
+                puestos_S[idx_puesto_S_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
-            else if (puestos_J[puestos_J.Count - 1].Tps == HV)
+            else if (puestos_J[idx_puesto_J_MayorTps].Tps == HV)
             {
                 //Si hay un puesto JUNIOR libre, toma el ticket           
-                staTN += puestos_J[puestos_J.Count - 1].AtenderTicket(ticket, T);                
+                staTN += puestos_J[idx_puesto_J_MayorTps].AtenderTicket(ticket, T);
 
                 //El puesto deja de estar ocioso
-                puestos_J[puestos_J.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_J[puestos_J.Count - 1].Ito);
-                puestos_J[puestos_J.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_J[idx_puesto_J_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_J[idx_puesto_J_MayorTps].Ito);
+                puestos_J[idx_puesto_J_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else
                 //Nadie lo pueda atender y el ticket queda encolado
-                cola_N.Add(ticket);            
+                cola_N.Add(ticket);
         }
 
         private void ProcesarLlegadaB()
@@ -324,41 +343,41 @@ namespace Simulacion_TP6
             ticket = new clTicket(prioridadTicket);
             ticket.Tll = T; //tiempo de llegada del ticket
 
-            if (puestos_J[puestos_J.Count - 1].Tps == HV)
+            if (puestos_J[idx_puesto_J_MayorTps].Tps == HV)
             {
                 //Si hay un puesto JUNIOR libre, toma el ticket           
-                staTB += puestos_J[puestos_J.Count - 1].AtenderTicket(ticket, T);
-                
-                //El puesto deja de estar ocioso
-                puestos_J[puestos_J.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_J[puestos_J.Count - 1].Ito);
-                puestos_J[puestos_J.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
-            }
-            else if (puestos_SS[puestos_SS.Count - 1].Tps == HV)
-            {
-                //Si hay un puesto SEMI SENIOR libre, toma el ticket           
-                staTB += puestos_SS[puestos_SS.Count - 1].AtenderTicket(ticket, T);
-                
-                //El puesto deja de estar ocioso
-                puestos_SS[puestos_SS.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_SS[puestos_SS.Count - 1].Ito);
-                puestos_SS[puestos_SS.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
-            }
-            else if (puestos_S[puestos_S.Count - 1].Tps == HV)
-            {
-                //Si hay un puesto SENIOR libre, toma el ticket           
-                staTB += puestos_S[puestos_S.Count - 1].AtenderTicket(ticket, T);;
+                staTB += puestos_J[idx_puesto_J_MayorTps].AtenderTicket(ticket, T);
 
                 //El puesto deja de estar ocioso
-                puestos_S[puestos_S.Count - 1].Sto += clDatosVar.RestarFechas(T, puestos_S[puestos_S.Count - 1].Ito);
-                puestos_S[puestos_S.Count - 1].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+                puestos_J[idx_puesto_J_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_J[idx_puesto_J_MayorTps].Ito);
+                puestos_J[idx_puesto_J_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+            }
+            else if (puestos_SS[idx_puesto_SS_MayorTps].Tps == HV)
+            {
+                //Si hay un puesto SEMI SENIOR libre, toma el ticket           
+                staTB += puestos_SS[idx_puesto_SS_MayorTps].AtenderTicket(ticket, T);
+
+                //El puesto deja de estar ocioso
+                puestos_SS[idx_puesto_SS_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_SS[idx_puesto_SS_MayorTps].Ito);
+                puestos_SS[idx_puesto_SS_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
+            }
+            else if (puestos_S[idx_puesto_S_MayorTps].Tps == HV)
+            {
+                //Si hay un puesto SENIOR libre, toma el ticket           
+                staTB += puestos_S[idx_puesto_S_MayorTps].AtenderTicket(ticket, T); ;
+
+                //El puesto deja de estar ocioso
+                puestos_S[idx_puesto_S_MayorTps].Sto += clDatosVar.RestarFechas(T, puestos_S[idx_puesto_S_MayorTps].Ito);
+                puestos_S[idx_puesto_S_MayorTps].Ito = DateTime.MinValue; //1/1/0001 00:00:00 (no puedo ponerle null)
             }
             else
                 //Nadie lo pueda atender y el ticket queda encolado
-                cola_B.Add(ticket);            
+                cola_B.Add(ticket);
         }
 
 
         private void ProcesarSalida(ref List<clPuesto> pPuestos, int pIndex)
-        {            
+        {
             //Avance del tiempo
             T = pPuestos[pIndex].Tps;
 
@@ -396,11 +415,66 @@ namespace Simulacion_TP6
             else
             {
                 //El puesto queda vacío
-                pPuestos[pIndex].Ticket = null; 
+                pPuestos[pIndex].Ticket = null;
                 pPuestos[pIndex].Tps = HV;
                 pPuestos[pIndex].Ito = T;
-            }                            
+            }
 
+        }
+
+        private int BuscarIdxMayorTps(List<clPuesto> pPuestos)
+        {
+
+            if (pPuestos.Count == 0)
+                return -1;
+
+            DateTime maxTps = DateTime.MinValue;
+            int idxMaxTps = -1;
+
+            for (var index = 0; index < pPuestos.Count; index++)
+            {
+                if (pPuestos[index].Tps > maxTps)
+                {
+                    maxTps = pPuestos[index].Tps;
+                    idxMaxTps = index;
+                }
+            }
+            return idxMaxTps;
+
+            /*
+            if (pPuestos.Count == 0)
+                return -1;
+
+            clPuesto puestoMayorTps = pPuestos.Aggregate((puesto1, puesto2) => puesto1.Tps > puesto2.Tps ? puesto1 : puesto2);
+            return pPuestos.IndexOf(puestoMayorTps);*/
+
+        }
+
+        private int BuscarIdxMenorTps(List<clPuesto> pPuestos)
+        {
+
+            if (pPuestos.Count == 0)
+                return -1;
+
+            DateTime minTps = DateTime.MaxValue;
+            int idxMinTps = -1;
+
+            for (var index = 0; index < pPuestos.Count; index++)
+            {
+                if (pPuestos[index].Tps <= minTps)
+                {
+                    minTps = pPuestos[index].Tps;
+                    idxMinTps = index;
+                }
+            }
+            return idxMinTps;
+
+            /*
+            if (pPuestos.Count == 0)
+                return -1;
+
+            clPuesto puestoMenorTps = pPuestos.Aggregate((puesto1, puesto2) => puesto1.Tps <= puesto2.Tps ? puesto1 : puesto2);
+            return pPuestos.IndexOf(puestoMenorTps);*/
         }
 
     }
