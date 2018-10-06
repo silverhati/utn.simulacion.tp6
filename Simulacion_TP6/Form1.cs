@@ -57,7 +57,8 @@ namespace Simulacion_TP6
 
         private void btnIniciar_Click(object sender, EventArgs e)
         {
-            txtResultados.Text = "";
+            txtResultados.Clear();
+            txtResultados.Enabled = false;
             btnIniciar.Text = "Calculando...";
             btnIniciar.Enabled = false;
 
@@ -75,6 +76,7 @@ namespace Simulacion_TP6
             simulacion = new clSimu(cantS, cantSS, cantJ);
             clSimuResultados resultados = simulacion.Iniciar();
 
+            txtResultados.Enabled = true;
             //Mostrar resultados
             string msg = "Cantidad Sr: " + cantS.ToString() + " -  Cantidad Ssr:" + cantSS.ToString() + " Cantidad Jr: " + cantJ.ToString() + Environment.NewLine +
                          "TMEA:" + resultados.TMEA + " // TMEN:" + resultados.TMEN + " // TMEB: " + resultados.TMEB + Environment.NewLine +
