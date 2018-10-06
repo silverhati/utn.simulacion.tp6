@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 
@@ -120,6 +121,55 @@ namespace Simulacion_TP6
             //Calcular resultados de la simulación
             resultados = new clSimuResultados(this);
             resultados.Calcular();
+
+            string path = @"C:\\ResultadosCSV.txt";
+
+            if (!File.Exists(path))
+            {
+                File.Create(path).Dispose();
+
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(
+
+                        "Cantidad Senior" + ";" + "Cantidad SemiSenior" + ";" + "Cantidad Junior" + ";" +
+
+                        "TMEA" + ";" + "TMEN" + ";" + "TMEB" + ";" +
+
+                        "TMAA" + ";" + "TMAN" + ";" + "TMAB" + ";" +
+
+                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + ";" +
+
+                        this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
+
+                        resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
+
+                        resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
+
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+
+                        );
+                }
+
+            }
+            else if (File.Exists(path))
+            {
+                using (TextWriter tw = new StreamWriter(path))
+                {
+                    tw.WriteLine(
+
+                        this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
+
+                        resultados.TMEA + ";" + resultados.TMEN + ";" + resultados.TMEB + ";" +
+
+                        resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
+
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+
+                        );
+                }
+            }
+
             return resultados;
         }
         
@@ -127,11 +177,11 @@ namespace Simulacion_TP6
         private void CondicionesIniciales()
         {
             //Tiempo Próxima Llegada (Tiempo Inicial)
-            Tinicial = new DateTime(2019, 01, 01, 09, 00, 00);
+            Tinicial = new DateTime(2019, 01, 01, 00, 00, 00);
             TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(2020, 01, 01, 18, 00, 00);
+            TF = new DateTime(3020, 01, 01, 18, 00, 00);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
