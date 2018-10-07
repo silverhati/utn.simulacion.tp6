@@ -18,6 +18,9 @@ namespace Simulacion_TP6
         private double ptoSS;
         private double ptoJ;
         private double ptoGral;
+        public double maxColaA;
+        public double maxColaN;
+        public double maxColaB;
         public double TMEA { get => tMEA; }
         public double TMEN { get => tMEN; }
         public double TMEB { get => tMEB; }

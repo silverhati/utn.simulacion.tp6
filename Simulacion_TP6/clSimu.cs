@@ -73,12 +73,29 @@ namespace Simulacion_TP6
         {            
             DateTime TpsS, TpsSS, TpsJ;
             clSimuResultados resultados;
+            Int64 maxA = 0;
+            Int64 maxN = 0;
+            Int64 maxB = 0;
 
             //Inicializar variables
             this.CondicionesIniciales();
 
             while (procesar == true)
             {
+                //Aca busco los maximos de colas de cada prioridad
+                if (this.Cola_A.Count > maxA)
+                {
+                    maxA = this.Cola_A.Count;
+                }
+                if (this.Cola_N.Count > maxN)
+                {
+                    maxN = this.Cola_N.Count;
+                }
+                if (this.Cola_B.Count > maxB)
+                {
+                    maxB = this.Cola_B.Count;
+                }
+
                 //Busco los puestos con menor Tiempo de Proxima Salida.
                 clPuesto puestoSeniorMenorTps = puestos_S.Aggregate((puesto1, puesto2) => puesto1.Tps <= puesto2.Tps ? puesto1 : puesto2);
                 clPuesto puestoSemiSeniorMenorTps = puestos_SS.Aggregate((puesto1, puesto2) => puesto1.Tps <= puesto2.Tps ? puesto1 : puesto2);
@@ -129,6 +146,9 @@ namespace Simulacion_TP6
             //Calcular resultados de la simulación
             resultados = new clSimuResultados(this);
             resultados.Calcular();
+            resultados.maxColaA = maxA;
+            resultados.maxColaN = maxN;
+            resultados.maxColaB = maxB;
 
             //Grabo los resultados en el archivo solo si cumplo con los parametros de performance requeridos.
             if (this.cumploParametrosPerformance(resultados))
@@ -143,9 +163,9 @@ namespace Simulacion_TP6
         {
             return (
                 resultados.TMEA <= 60 &&
-                resultados.TMEN <= 240 &&
+                resultados.TMEN <= 270 &&
                 resultados.TMEB <= 1440 &&
-                resultados.PtoGral <= 0.25
+                resultados.PtoGral <= 0.22
                 );
         }
 
@@ -165,7 +185,9 @@ namespace Simulacion_TP6
 
                         "TMAA" + ";" + "TMAN" + ";" + "TMAB" + ";" +
 
-                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + Environment.NewLine +
+                        "PTOS" + ";" + "PTOSS" + ";" + "PTOJ" + ";" +
+
+                        "MaxColaA" + ";" + "MaxColaN" + ";" + "MaxColaB" + Environment.NewLine +
 
                         this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
 
@@ -173,7 +195,9 @@ namespace Simulacion_TP6
 
                         resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
 
-                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + ";" +
+
+                        resultados.maxColaA + ";" + resultados.maxColaN + ";" + resultados.maxColaB
 
                         );
                 }
@@ -187,7 +211,9 @@ namespace Simulacion_TP6
 
                         resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
 
-                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + Environment.NewLine);
+                        resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + ";" +
+
+                        resultados.maxColaA + ";" + resultados.maxColaN + ";" + resultados.maxColaB + Environment.NewLine);
             }
         }
 
