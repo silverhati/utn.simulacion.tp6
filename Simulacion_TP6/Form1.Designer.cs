@@ -38,6 +38,7 @@
             this.btnIniciar = new System.Windows.Forms.Button();
             this.groupBox2 = new System.Windows.Forms.GroupBox();
             this.txtResultados = new System.Windows.Forms.TextBox();
+            this.btnBuscarMejor = new System.Windows.Forms.Button();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.SuspendLayout();
@@ -137,12 +138,23 @@
             this.txtResultados.Size = new System.Drawing.Size(333, 134);
             this.txtResultados.TabIndex = 0;
             // 
+            // btnBuscarMejor
+            // 
+            this.btnBuscarMejor.Location = new System.Drawing.Point(230, 185);
+            this.btnBuscarMejor.Name = "btnBuscarMejor";
+            this.btnBuscarMejor.Size = new System.Drawing.Size(121, 39);
+            this.btnBuscarMejor.TabIndex = 8;
+            this.btnBuscarMejor.Text = "Buscar Aptos entre 6 y 12";
+            this.btnBuscarMejor.UseVisualStyleBackColor = true;
+            this.btnBuscarMejor.Click += new System.EventHandler(this.btnBuscarMejor_Click);
+            // 
             // Form1
             // 
             this.AcceptButton = this.btnIniciar;
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(369, 457);
+            this.Controls.Add(this.btnBuscarMejor);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.btnIniciar);
             this.Controls.Add(this.groupBox1);
@@ -169,6 +181,7 @@
         private System.Windows.Forms.Button btnIniciar;
         private System.Windows.Forms.GroupBox groupBox2;
         private System.Windows.Forms.TextBox txtResultados;
+        private System.Windows.Forms.Button btnBuscarMejor;
     }
 }
 

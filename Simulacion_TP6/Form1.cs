@@ -45,13 +45,74 @@ namespace Simulacion_TP6
             this.SetButton();
         }
 
+        private void btnBuscarMejor_Click(object sender, EventArgs e)
+        {
+            txtResultados.Clear();
+            txtResultados.Enabled = false;
+            txtCantJ.Enabled = false;
+            txtCantSS.Enabled = false;
+            txtCantS.Enabled = false;
+            btnIniciar.Enabled = false;
+            btnBuscarMejor.Text = "Buscando...";
+            btnBuscarMejor.Enabled = false;
+
+            List<Tuple<Int32, Int32, Int32>> configuraciones = this.obtengoPosiblesConfiguraciones();
+
+            foreach (Tuple<Int32, Int32, Int32> configuracion in configuraciones)
+            {
+                //Correr la simulación
+                simulacion = new clSimu(configuracion.Item1, configuracion.Item2, configuracion.Item3);
+                clSimuResultados resultados = simulacion.Iniciar();
+            }
+
+            txtResultados.Enabled = true;
+            //Mostrar resultados
+            string msg = "Finalizo la busqueda, buscar el archivo C:\\Resultados.CSV";
+            txtResultados.Text = msg; // MessageBox.Show(msg);
+
+            txtCantJ.Enabled = true;
+            txtCantSS.Enabled = true;
+            txtCantS.Enabled = true;
+            this.SetButton();
+            btnBuscarMejor.Enabled = true;
+            btnBuscarMejor.Text = "Buscar mejor";
+        }
+
+        //Basicamente obtengo todas las posible configuraciones entre 6 y 12 empleados, con al menos uno de ellos. 210 configuraciones
+        private List<Tuple<Int32, Int32, Int32>> obtengoPosiblesConfiguraciones()
+        {
+            List<Tuple<Int32, Int32, Int32>> results = new List<Tuple<Int32, Int32, Int32>>();
+
+            List<Int32> seniors = new List<Int32> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            List<Int32> semiSeniors = new List<Int32> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            List<Int32> juniors = new List<Int32> { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            foreach (Int32 s in seniors)
+            {
+                foreach (Int32 ss in semiSeniors)
+                {
+                    foreach (Int32 j in juniors)
+                    {
+                        if (s + ss + j == 6 || s + ss + j == 7 || s + ss + j == 8 || s + ss + j == 9 || s + ss + j == 10 || s + ss + j == 11 || s + ss + j == 12)
+                        {
+                            results.Add(new Tuple<int, int, int>(s, ss, j));
+                        }
+                    }
+                }
+            }
+
+            return results;
+        }
+
         static public void onlyNumeric_KeyPress(object sender, KeyPressEventArgs e)
         {
             //Permitir sólo datos numéricos
             if (!char.IsControl(e.KeyChar)
                 && !char.IsDigit(e.KeyChar))
             {
-                    e.Handled = true;
+                e.Handled = true;
             }
         }
 

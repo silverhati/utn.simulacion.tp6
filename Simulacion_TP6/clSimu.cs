@@ -130,6 +130,27 @@ namespace Simulacion_TP6
             resultados = new clSimuResultados(this);
             resultados.Calcular();
 
+            //Grabo los resultados en el archivo solo si cumplo con los parametros de performance requeridos.
+            if (this.cumploParametrosPerformance(resultados))
+            {
+                vuelcoAArchivo(resultados);
+            }
+
+            return resultados;
+        }
+
+        private bool cumploParametrosPerformance(clSimuResultados resultados)
+        {
+            return (
+                resultados.TMEA <= 60 &&
+                resultados.TMEN <= 240 &&
+                resultados.TMEB <= 1440 &&
+                resultados.PtoGral <= 0.25
+                );
+        }
+
+        public void vuelcoAArchivo(clSimuResultados resultados)
+        {
             String path = "C:\\ResultadosCSV.txt";
 
             if (!File.Exists(path))
@@ -156,7 +177,8 @@ namespace Simulacion_TP6
 
                         );
                 }
-            } else
+            }
+            else
             {
                 File.AppendAllText(path,
                         this.CantS + ";" + this.CantSS + ";" + this.CantJ + ";" +
@@ -166,12 +188,9 @@ namespace Simulacion_TP6
                         resultados.TMAA + ";" + resultados.TMAN + ";" + resultados.TMAB + ";" +
 
                         resultados.PTOS + ";" + resultados.PTOSS + ";" + resultados.PTOJ + Environment.NewLine);
-            }          
-
-            return resultados;
+            }
         }
-        
-        
+
         private void CondicionesIniciales()
         {
             //Tiempo Próxima Llegada (Tiempo Inicial)
@@ -179,7 +198,7 @@ namespace Simulacion_TP6
             TPLL = Tinicial;
 
             //Tiempo Final
-            TF = new DateTime(2029, 12, 31, 23, 59, 59);
+            TF = new DateTime(2020, 12, 31, 23, 59, 59);
 
             //Inicializar puestos SENIOR
             puestos_S = new List<clPuesto>();
